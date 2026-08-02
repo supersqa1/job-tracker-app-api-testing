@@ -1,5 +1,5 @@
-from imaplib import Int2AP
 import requests
+from configs.settings import BASE_URL
 
 def test_verify_public_demo_stats():
     """
@@ -19,7 +19,7 @@ def test_verify_public_demo_stats():
     """
 
     # make the call
-    url = "http://localhost:3050/api/v1/public/demo-stats"
+    url = f"{BASE_URL}/api/v1/public/demo-stats"
     response = requests.get(url)
 
     # verify the status code
