@@ -18,3 +18,18 @@ Course state:
 - Public demo stats endpoint test implemented
 - Base URL moved out of test files into shared settings
 - Next course step: add login API tests
+
+## framework-05-login-tests
+
+Checkpoint after adding authentication login tests.
+
+Includes:
+- Positive login test with valid student credentials
+- Negative login test with invalid credentials
+- Auth tests organized under `tests/auth/`
+- Public tests organized under `tests/public/`
+
+Course state:
+- Students have seen GET public API tests
+- Students have seen POST login API tests
+- Next course step: test protected API endpoint using auth token
