@@ -1,23 +1,14 @@
+"""
+Tests for the public demo stats endpoint.
+"""
+
 import requests
 from configs.settings import BASE_URL
 
 def test_verify_public_demo_stats():
     """
-    Example response body:{
-  "total_seeded_applications": 4,
-  "status_counts": {
-    "potential": 2,
-    "applied": 1,
-    "in_progress": 1,
-    "final_stage": 0,
-    "hired": 0,
-    "rejected": 0,
-    "withdrawn": 0,
-    "total": 4
-  }
-}
+    Verify the public demo stats endpoint returns seeded application counts.
     """
-
     # make the call
     url = f"{BASE_URL}/api/v1/public/demo-stats"
     response = requests.get(url)

@@ -1,24 +1,20 @@
+"""
+Tests for the applications summary endpoint.
+"""
 
-from configs.settings import BASE_URL
-import requests
+from clients.api_client import APIClient
 from helpers.auth_helper import login_user
 
 def test_verify_authenticated_user_can_get_applications_summary():
+    """
+    Verify an authenticated user can retrieve application counts by status.
+    """
 
-    # login and get the jwt token
-    access_token= login_user()
- 
     # make the call with the token in header
-    get_applications_url = f"{BASE_URL}/api/v1/applications/summary"
-    headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(get_applications_url, headers=headers)
+    applications_summary_endpoint = f"/api/v1/applications/summary"
+    api_client = APIClient()
+    response_body = api_client.get_json(applications_summary_endpoint,)
 
-    # verify the status code
-    assert response.status_code == 200, \
-        f"Get applications/summary api response expected to be 200 but actual was {response.status_code} Endpoint: '/api/v1/applications/summary'"
-
-    # verify the response body
-    response_body = response.json()
     assert response_body, "Expected a response but got empty or null. Endpoint: /api/v1/applications/summary"
 
     assert isinstance(response_body['potential'], int), f"Expected integer in the response body 'potential' field. But got {response_body['potential']}"

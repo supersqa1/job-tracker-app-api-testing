@@ -1,15 +1,13 @@
+"""
+Tests for the public status endpoint.
+"""
+
 import requests
 from configs.settings import BASE_URL
 
 def test_verify_public_status_endpoint():
     """
-    Example response body:
-        {
-    "app_name": "SuperSQA Job Tracker",
-    "api_version": "v1",
-    "environment": "local",
-    "server_time": "2026-08-02T01:55:28.264940Z"
-    }
+    Verify the public status endpoint returns app metadata without authentication.
     """
     # make the call
     url = f"{BASE_URL}/api/v1/public/status"
