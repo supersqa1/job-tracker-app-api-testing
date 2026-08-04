@@ -1,39 +1,26 @@
-from configs.settings import BASE_URL
-import requests
+"""
+Tests for the auth login endpoint.
+"""
 
+from clients.api_client import APIClient
+
+api_client = APIClient()
 
 def test_verify_user_can_login_with_valid_credentials():
     """
-    Example response body:
-    {
-        "access_token": "string",
-        "token_type": "bearer",
-        "expires_in": 0,
-        "user": {
-            "id": 0,
-            "email": "user@example.com",
-            "full_name": "string",
-            "role": "user",
-            "is_active": true,
-            "created_at": "2026-08-02T21:05:31.936Z",
-            "updated_at": "2026-08-02T21:05:31.936Z"
-        }
-        }
+    Verify valid credentials return a bearer token and user profile.
     """
 
     # Make the call
-    url = f"{BASE_URL}/api/v1/auth/login"
+    endpoint = f"/api/v1/auth/login"
     payload = {
         "email": "student@example.com",
         "password": "Password123!"
         }
-    response = requests.post(url, json=payload)
+    
+    # the client will make the call and return the json body of the response
+    response_body = api_client.post_json(endpoint, data=payload)
 
-    # Verify the response code
-    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
-
-    # verify response body
-    response_body = response.json()
     assert response_body["access_token"], f"Access token is required, but got {response_body['access_token']}"
     assert response_body["token_type"] == "bearer", "Token type is required"
     assert response_body["expires_in"], f"Expires in is required, but got {response_body['expires_in']}"
@@ -49,29 +36,19 @@ def test_verify_user_can_login_with_valid_credentials():
 
 def test_verify_user_cannot_login_with_invalid_credentials():
     """
-    Example response body:
-    {
-        "error": {
-            "code": "INVALID_CREDENTIALS",
-            "message": "Invalid email or password",
-            "details": []
-        }
-        }
+    Verify invalid credentials return 401 with an INVALID_CREDENTIALS error.
     """
 
-        # Make the call
-    url = f"{BASE_URL}/api/v1/auth/login"
+    # Make the call
+    endpoint = f"/api/v1/auth/login"
     payload = {
         "email": "student@example.com",
         "password": "Password1234"
         }
-    response = requests.post(url, json=payload)
 
-    # Verify the response code
-    assert response.status_code == 401, f"Expected status code 401, but got {response.status_code}"
+    response_body = api_client.post_json(endpoint, data=payload, expected_status_code=401)
 
     # verify the response body
-    response_body = response.json()
     assert isinstance(response_body["error"], dict), "Expected response body to have 'error' dictionary."
     
     assert response_body["error"]["code"] == "INVALID_CREDENTIALS", \
