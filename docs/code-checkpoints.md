@@ -33,3 +33,18 @@ Course state:
 - Students have seen GET public API tests
 - Students have seen POST login API tests
 - Next course step: test protected API endpoint using auth token
+
+## framework-06-auth-helper
+
+Checkpoint after adding protected application tests and a reusable login helper.
+
+Includes:
+- `helpers/auth_helper.py` with `login_user()`
+- default user credentials in `configs/settings.py`
+- protected `GET /api/v1/applications` test
+- protected `GET /api/v1/applications/summary` test
+
+Course state:
+- Students have seen Bearer token auth in protected API tests
+- Repeated login/token code has been refactored into a helper
+- Next course step: create a reusable API client
