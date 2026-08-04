@@ -48,3 +48,24 @@ Course state:
 - Students have seen Bearer token auth in protected API tests
 - Repeated login/token code has been refactored into a helper
 - Next course step: create a reusable API client
+
+## framework-07-api-client
+
+Checkpoint after creating and improving the reusable API client.
+
+Includes:
+- `clients/api_client.py`
+- `pytest.ini` log CLI settings
+- API client GET and POST helpers
+- API client base URL handling
+- API client default authenticated behavior
+- reusable status code validation
+- request/response logging from the client
+- application and login tests refactored to use the client
+
+Course state:
+- Students have a working API client abstraction
+- Tests can pass endpoints instead of full URLs
+- Most authenticated endpoint tests can use `APIClient()` directly
+- Public/login-style tests can use unauthenticated client behavior
+- Next course step: write more application workflow tests
