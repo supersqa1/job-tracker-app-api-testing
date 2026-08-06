@@ -129,6 +129,29 @@ class APIClient:
         response = self.post(endpoint, data, headers, expected_status_code)
         return response.json()
 
+    def delete(self, endpoint, expected_status_code=204):
+        headers = self.build_headers()
+        url = self.build_url(endpoint)
+        response = requests.delete(url, headers=headers)
+        self.verify_status_code(response, expected_status_code, url)
+        return response
+
+    def patch(self, endpoint, data, headers=None, expected_status_code=200):
+        """
+
+        """
+        headers = self.build_headers(headers)
+        url = self.build_url(endpoint)
+        logger.debug("PATCH %s (expecting %s)", url, expected_status_code)
+        response = requests.patch(url, json=data,headers=headers)
+        logger.info("PATCH %s -> %s", url, response.status_code)
+        self.verify_status_code(response, expected_status_code, url)
+        return response
+
+    def patch_json(self, endpoint, data, headers=None, expected_status_code=200):
+        response = self.patch(endpoint, data, headers=headers, expected_status_code=expected_status_code)
+        return response.json()
+
     def build_headers(self, headers=None):
         """
         Merge caller headers with auth headers when the client is authenticated.
@@ -155,14 +178,14 @@ class APIClient:
         """
         if response.status_code != expected_status_code:
             logger.warning(
-                "Unexpected status for %s: expected %s, got %s",
-                url, expected_status_code, response.status_code,
+                "Unexpected status for %s: expected %s, got %s, Response content, %s",
+                url, expected_status_code, response.status_code, response.content
             )
         else:
             logger.debug("Status verified for %s: %s", url, expected_status_code)
         assert response.status_code == expected_status_code, \
             f"Status code. Expected: {expected_status_code}, \
-            Actual: {response.status_code}, URL: {url}"
+            Actual: {response.status_code}, URL: {url}, Response: {response.content}"
 
 
     def build_url(self, endpoint):
