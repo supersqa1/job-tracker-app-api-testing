@@ -50,7 +50,7 @@ class APIClient:
             "password": password
             }
 
-        response_body = self.post_json("/api/v1/auth/login", data=payload)
+        response_body = self.post_json("/api/v1/auth/login", data=payload, expected_status_code=200)
 
         logger.info("Login successful for %s", email)
         return response_body["access_token"]
@@ -91,7 +91,7 @@ class APIClient:
         response = self.get(endpoint, headers, expected_status_code)
         return response.json()
 
-    def post(self, endpoint, data, headers=None, expected_status_code=200):
+    def post(self, endpoint, data, headers=None, expected_status_code=201):
         """
         Send a POST request with a JSON body and assert the response status.
 
@@ -112,7 +112,7 @@ class APIClient:
         self.verify_status_code(response, expected_status_code, url)
         return response
 
-    def post_json(self, endpoint, data, headers=None, expected_status_code=200):
+    def post_json(self, endpoint, data, headers=None, expected_status_code=201):
         """
         Send a POST request and return the parsed JSON body.
 
@@ -130,6 +130,16 @@ class APIClient:
         return response.json()
 
     def delete(self, endpoint, expected_status_code=204):
+        """
+        Send a DELETE request and assert the response status.
+
+        Args:
+            endpoint: API path appended to the base URL.
+            expected_status_code: Status code the response must match.
+
+        Returns:
+            The raw ``requests`` response object.
+        """
         headers = self.build_headers()
         url = self.build_url(endpoint)
         response = requests.delete(url, headers=headers)
@@ -138,7 +148,16 @@ class APIClient:
 
     def patch(self, endpoint, data, headers=None, expected_status_code=200):
         """
+        Send a PATCH request with a JSON body and assert the response status.
 
+        Args:
+            endpoint: API path appended to the base URL.
+            data: JSON-serializable payload.
+            headers: Optional headers merged with the client's defaults.
+            expected_status_code: Status code the response must match.
+
+        Returns:
+            The raw ``requests`` response object.
         """
         headers = self.build_headers(headers)
         url = self.build_url(endpoint)
@@ -149,6 +168,18 @@ class APIClient:
         return response
 
     def patch_json(self, endpoint, data, headers=None, expected_status_code=200):
+        """
+        Send a PATCH request and return the parsed JSON body.
+
+        Args:
+            endpoint: API path appended to the base URL.
+            data: JSON-serializable payload.
+            headers: Optional headers merged with the client's defaults.
+            expected_status_code: Status code the response must match.
+
+        Returns:
+            Parsed JSON from the response body.
+        """
         response = self.patch(endpoint, data, headers=headers, expected_status_code=expected_status_code)
         return response.json()
 
