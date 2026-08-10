@@ -2,10 +2,13 @@
 Tests that application updates write expected rows to audit logs.
 """
 
+import pytest
+
 from clients.api_client import APIClient
 from clients.sql_client import SQLClient
 
 
+@pytest.mark.tcid("019")
 def test_verify_update_application_writes_to_audit_logs():
     """
     Verify updating an application records an ``updated`` audit log with status transition.

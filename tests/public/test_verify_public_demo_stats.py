@@ -1,10 +1,11 @@
 """
 Tests for the public demo stats endpoint.
 """
-
+import pytest
 import requests
 from configs.settings import BASE_URL
 
+@pytest.mark.tcid("002")
 def test_verify_public_demo_stats():
     """
     Verify the public demo stats endpoint returns seeded application counts.

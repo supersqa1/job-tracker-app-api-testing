@@ -2,10 +2,14 @@
 Tests that application creation writes expected rows to audit logs.
 """
 
-from clients.api_client import APIClient
-from clients.sql_client import SQLClient
 import sqlite3
 
+import pytest
+
+from clients.api_client import APIClient
+from clients.sql_client import SQLClient
+
+@pytest.mark.tcid("017")
 def test_verify_create_application_writes_to_audit_logs():
     """
     Verify creating an application records a ``created`` audit log via raw SQL.
@@ -54,6 +58,7 @@ def test_verify_create_application_writes_to_audit_logs():
     assert audit_log["user_id"]
 
 
+@pytest.mark.tcid("018")
 def test_verify_create_application_writes_to_audit_logs_V2():
     """
     Verify creating an application records a ``created`` audit log via SQLClient.

@@ -2,12 +2,15 @@
 Tests for the applications list endpoint.
 """
 
+import pytest
+
 from urllib3 import request
 from configs.settings import BASE_URL
 from clients.api_client import APIClient
 
 from helpers.auth_helper import login_user
 
+@pytest.mark.tcid("005")
 def test_verify_authenticated_user_can_get_applications():
     """
     Verify an authenticated user can retrieve their applications list.

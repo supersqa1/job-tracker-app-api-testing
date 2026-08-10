@@ -1,22 +1,29 @@
-﻿test_case_id,title,feature,priority,endpoint,preconditions,steps,expected_result,automation_status
-TC-001,Verify public status endpoint returns app status,Public API,High,/api/v1/public/status,The app needs to be running,Send a GET request to /api/v1/public/status,"Response status is 200 and response body includes app status information
-Example: {
-  ""app_name"": ""SuperSQA Job Tracker"",
-  ""api_version"": ""v1"",
-  ""environment"": ""local"",
-  ""server_time"": ""2026-08-01T20:13:39.678556Z""
-}",PENDING
-TC-002,Verify public demo stats endpoint returns demo statistics,Public API,Medium,/api/v1/public/demo-stats,The app needs to be running,Send a GET request to /api/v1/public/demo-stats,"Verify response is 200 and response body is correct structure.
-Example: {
-  ""total_seeded_applications"": 4,
-  ""status_counts"": {
-    ""potential"": 2,
-    ""applied"": 1,
-    ""in_progress"": 1,
-    ""final_stage"": 0,
-    ""hired"": 0,
-    ""rejected"": 0,
-    ""withdrawn"": 0,
-    ""total"": 4
-  }
-}",PENDING
+test_case_id,title,feature,priority,endpoint,preconditions,steps,expected_result,automation_status
+TC-001,Verify public status endpoint returns app status,Public API,High,/api/v1/public/status,The app needs to be running,Send a GET request to /api/v1/public/status,"Response status is 200 and response body includes app metadata:
+app_name is SuperSQA Job Tracker
+api_version is v1
+environment is local
+server_time is present",AUTOMATED
+TC-002,Verify public demo stats endpoint returns demo statistics,Public API,Medium,/api/v1/public/demo-stats,The app needs to be running,Send a GET request to /api/v1/public/demo-stats,"Response status is 200 and response body includes:
+total_seeded_applications as an integer
+status_counts as an object
+each status count value as an integer",AUTOMATED
+TC-003,Verify user can login with valid credentials,Authentication,High,/api/v1/auth/login,The app needs to be running and the test user needs to exist,Send a POST request to /api/v1/auth/login with valid email and password,"Response status is 200 and response body includes access_token, token_type bearer, expires_in, and a populated user object for the login email",AUTOMATED
+TC-004,Verify user cannot login with invalid credentials,Authentication,High,/api/v1/auth/login,The app needs to be running,Send a POST request to /api/v1/auth/login with a valid email and invalid password,"Response status is 401 and response body includes error code INVALID_CREDENTIALS, message Invalid email or password, and an empty details list",AUTOMATED
+TC-005,Verify authenticated user can get applications,Applications,High,/api/v1/applications,The app needs to be running and the API client needs to be authenticated,Send a GET request to /api/v1/applications,Response status is 200 and response body is a non-empty list of applications,AUTOMATED
+TC-006,Verify authenticated user can get applications summary,Applications,Medium,/api/v1/applications/summary,The app needs to be running and the API client needs to be authenticated,Send a GET request to /api/v1/applications/summary,"Response status is 200 and response body includes integer counts for potential, applied, in_progress, final_stage, hired, rejected, withdrawn, and total",AUTOMATED
+TC-007,Verify user can create application,Applications,High,/api/v1/applications,The app needs to be running and the API client needs to be authenticated,Send a POST request to /api/v1/applications with a valid application payload,Response status is 201 and response body matches the submitted application fields. A follow-up GET by id returns the same created application,AUTOMATED
+TC-008,Verify user can update application status,Applications,High,/api/v1/applications/{application_id},The app needs to be running and a test application needs to exist,Send a PATCH request to /api/v1/applications/{application_id} changing status from applied to in_progress,Response status is 200 and response body shows the updated status. A follow-up GET by id returns the saved status,AUTOMATED
+TC-009,Verify user can delete application,Applications,High,/api/v1/applications/{application_id},The app needs to be running and a test application needs to exist,Send a DELETE request to /api/v1/applications/{application_id} and then send a GET request for the same id,Delete response status is 204. Follow-up GET for the deleted application returns 404,AUTOMATED
+TC-010,Verify user can update application notes,Applications,Medium,/api/v1/applications/{application_id},The app needs to be running and a test application needs to exist,Send a PATCH request to /api/v1/applications/{application_id} with a new notes value,Response status is 200 and notes value is changed. A follow-up GET by id returns the updated notes,AUTOMATED
+TC-011,Verify user can update application remote type,Applications,Medium,/api/v1/applications/{application_id},The app needs to be running and a test application needs to exist with remote_type on_site,Send a PATCH request to /api/v1/applications/{application_id} changing remote_type to hybrid,Response status is 200 and remote_type changes from on_site to hybrid. A follow-up GET by id returns hybrid,AUTOMATED
+TC-012,Verify user can update application salary range,Applications,Medium,/api/v1/applications/{application_id},The app needs to be running and a test application needs to exist,Send a PATCH request to /api/v1/applications/{application_id} with a new salary_range value,Response status is 200 and salary_range is changed. A follow-up GET by id returns the updated salary_range,AUTOMATED
+TC-013,Verify create application requires company name,Applications Negative,High,/api/v1/applications,The app needs to be running and the API client needs to be authenticated,Send a POST request to /api/v1/applications without company_name,"Response status is 422 and response body includes error code VALIDATION_ERROR, message Request validation failed, and validation details for company_name",AUTOMATED
+TC-014,Verify create application rejects invalid status,Applications Negative,High,/api/v1/applications,The app needs to be running and the API client needs to be authenticated,Send a POST request to /api/v1/applications with an invalid status value,"Response status is 422 and response body includes error code VALIDATION_ERROR, message Request validation failed, and validation details for status",AUTOMATED
+TC-015,Verify nonexistent application returns not found,Applications Negative,Medium,/api/v1/applications/{application_id},The app needs to be running and the API client needs to be authenticated,Send a GET request to /api/v1/applications/999999,"Response status is 404 and response body includes error code NOT_FOUND, message Application not found, and an empty details list",AUTOMATED
+TC-016,Verify applications list requires authentication,Applications Negative,High,/api/v1/applications,The app needs to be running and the API client must not be authenticated,Send a GET request to /api/v1/applications without authentication,Response status is 401 and response body includes error code AUTHENTICATION_REQUIRED and message Authentication required,AUTOMATED
+TC-017,Verify creating an application writes an audit log using raw SQL,Application Audit Logs,Medium,/api/v1/applications,The app needs to be running and database access needs to be available,Create an application through POST /api/v1/applications and query application_audit_logs directly with sqlite3,Application is created with status 201 and the database contains an audit log row for the application with action created and a user_id,AUTOMATED
+TC-018,Verify creating an application writes an audit log using SQLClient,Application Audit Logs,Medium,/api/v1/applications,The app needs to be running and database access needs to be available,Create an application through POST /api/v1/applications and query application_audit_logs using SQLClient,Application is created with status 201 and the database contains an audit log row for the application with action created and a user_id,AUTOMATED
+TC-019,Verify updating an application writes an audit log,Application Audit Logs,Medium,/api/v1/applications/{application_id},The app needs to be running and database access needs to be available,Create an application with status potential and then PATCH the application status to applied,"Response status is successful and the latest audit log row has action updated, old_status potential, and new_status applied",AUTOMATED
+TC-020,Verify deleting an application writes an audit log,Application Audit Logs,Medium,/api/v1/applications/{application_id},The app needs to be running and database access needs to be available,Create an application with status potential and then DELETE the application,"Delete response status is 204, follow-up GET returns 404, and the latest audit log row has action deleted, old_status potential, and new_status empty",AUTOMATED
+TC-021,Verify API key is not stored as plain text,API Keys,High,/api/v1/api-keys,The app needs to be running and database access needs to be available,Send a POST request to /api/v1/api-keys and then query the api_keys table for the created key,Response includes an api_key and key_prefix starting with jt_live_. The database key_prefix matches the response and hashed_key is not equal to the plain text api_key,AUTOMATED

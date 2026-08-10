@@ -2,10 +2,13 @@
 Tests that API keys are stored securely in the database.
 """
 
+import pytest
+
 from clients.api_client import APIClient
 from clients.sql_client import SQLClient
 
 
+@pytest.mark.tcid("021")
 def test_verify_api_key_is_not_stored_as_plain_text():
     """
     Verify newly created API keys are hashed in the database, not stored in plain text.
