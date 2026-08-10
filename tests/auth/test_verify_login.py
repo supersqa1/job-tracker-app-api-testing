@@ -22,7 +22,7 @@ def test_verify_user_can_login_with_valid_credentials():
         }
     
     # the client will make the call and return the json body of the response
-    response_body = api_client.post_json(endpoint, data=payload)
+    response_body = api_client.post_json(endpoint, data=payload, expected_status_code=200)
 
     assert response_body["access_token"], f"Access token is required, but got {response_body['access_token']}"
     assert response_body["token_type"] == "bearer", "Token type is required"
