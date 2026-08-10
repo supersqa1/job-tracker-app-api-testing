@@ -1,6 +1,9 @@
 
+import pytest
+
 from clients.api_client import APIClient
 
+@pytest.mark.tcid("009")
 def test_verify_user_can_delete_application():
     # Setup - create an application
     payload = {

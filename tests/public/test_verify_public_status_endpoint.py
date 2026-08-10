@@ -1,10 +1,11 @@
 """
 Tests for the public status endpoint.
 """
-
+import pytest
 import requests
 from configs.settings import BASE_URL
 
+@pytest.mark.tcid("001")
 def test_verify_public_status_endpoint():
     """
     Verify the public status endpoint returns app metadata without authentication.

@@ -2,9 +2,12 @@
 Tests for the applications summary endpoint.
 """
 
+import pytest
+
 from clients.api_client import APIClient
 from helpers.auth_helper import login_user
 
+@pytest.mark.tcid("006")
 def test_verify_authenticated_user_can_get_applications_summary():
     """
     Verify an authenticated user can retrieve application counts by status.

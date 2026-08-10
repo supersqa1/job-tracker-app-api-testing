@@ -1,6 +1,9 @@
 
+import pytest
+
 from clients.api_client import APIClient
 
+@pytest.mark.tcid("007")
 def test_verify_user_can_create_application():
 
     # create a payload
