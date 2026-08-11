@@ -10,6 +10,13 @@ jobs:
     steps:
       - name: Checkout test framework
         uses: actions/checkout@v5
+
+      - name: Checkout application code
+        uses: actions/checkout@v5
+        with: 
+          repository: supersqa1/job-tracker-app-for-testing
+          path: app-under-test
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
