@@ -7,7 +7,7 @@ jobs:
     name: Run API Test Suite - V1
     runs-on: ubuntu-latest
 
-    setps:
+    steps:
       - name: Checkout test framework
         uses: actions/checkout@v5
     
