@@ -12,6 +12,6 @@ jobs:
         uses: actions/checkout@v5
     
       - name: debug
-        run:
-          - pwd
-          - ls -la
+        run: |
+          pwd
+          ls -la
