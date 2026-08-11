@@ -1,6 +1,7 @@
 name: Demo 03 - Realistic Pipeline
 
-on: push
+on: 
+  workflow_dispatch:
 
 jobs:
   lint:

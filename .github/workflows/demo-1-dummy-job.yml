@@ -1,6 +1,7 @@
 name: Demo 1 - Just Dummy single job
 
-on: push
+on: 
+  workflow_dispatch:
 
 jobs:
     my-job-1:

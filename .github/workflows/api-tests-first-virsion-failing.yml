@@ -1,0 +1,17 @@
+name: API Tests
+
+on: push
+
+jobs:
+  api-tests:
+    name: Run API Test Suite - V1
+    runs-on: ubuntu-latest
+
+    setps:
+      - name: Checkout test framework
+        uses: actions/checkout@v5
+    
+      - name: debug
+        run:
+          - pwd
+          - ls -la
