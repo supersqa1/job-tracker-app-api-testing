@@ -6,7 +6,8 @@ jobs:
   api-tests:
     name: Run API Test Suite - V1
     runs-on: ubuntu-latest
-
+    env:
+        DATABASE_PATH: ${{ github.workspace }}/app-under-test/backend/data/job_tracker.db
     steps:
       - name: Checkout test framework
         uses: actions/checkout@v5
@@ -31,7 +32,15 @@ jobs:
         run: |
           cp .env.example .env
           uvicorn app.main:app --host 0.0.0.0 --port 3050 &
-          
+      
+      - name: Wait for API app
+        run: |
+          for i in {1..30}; do
+            curl -f http://localhost:3050/api/v1/public/status && exit 0
+            sleep 2
+          done
+          echo "API app did not start in time"
+          exit 1
       - name: debug
         run: |
           pwd
