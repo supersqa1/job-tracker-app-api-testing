@@ -15,3 +15,6 @@ jobs:
         run: |
           pwd
           ls -la
+  
+      - name: Run api tests
+        run: python3 -m pytest tests
