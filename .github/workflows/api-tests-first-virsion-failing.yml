@@ -10,13 +10,18 @@ jobs:
     steps:
       - name: Checkout test framework
         uses: actions/checkout@v5
-    
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"    
+          
       - name: debug
         run: |
           pwd
           ls -la
           which -a python3
           python3 --version
-  
+
+
       - name: Run api tests
         run: python3 -m pytest tests
