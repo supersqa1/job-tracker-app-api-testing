@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
         DATABASE_PATH: ${{ github.workspace }}/app-under-test/backend/data/job_tracker.db
-
+        
     steps:
       - name: Checkout test framework
         uses: actions/checkout@v5
