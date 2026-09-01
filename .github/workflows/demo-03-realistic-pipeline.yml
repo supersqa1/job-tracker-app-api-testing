@@ -1,6 +1,6 @@
 name: Demo 03 - Realistic Pipeline
 
-on: 
+on:
   workflow_dispatch:
 
 jobs:

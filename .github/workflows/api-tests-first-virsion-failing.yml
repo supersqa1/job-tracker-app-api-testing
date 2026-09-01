@@ -1,28 +1,29 @@
-name: API Tests
+name: API Tests - First Version Failing Demo
 
-on: push
+on:
+  workflow_dispatch:
 
 jobs:
   api-tests:
     name: Run API Test Suite - V1
     runs-on: ubuntu-latest
     env:
-        DATABASE_PATH: ${{ github.workspace }}/app-under-test/backend/data/job_tracker.db
+      DATABASE_PATH: ${{ github.workspace }}/app-under-test/backend/data/job_tracker.db
 
     steps:
       - name: Checkout test framework
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Checkout application code
-        uses: actions/checkout@v5
-        with: 
+        uses: actions/checkout@v4
+        with:
           repository: supersqa1/job-tracker-app-for-testing
           path: app-under-test
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.14"    
+          python-version: "3.11"
 
       - name: Install App Dependencies
         working-directory: app-under-test/backend
@@ -33,7 +34,7 @@ jobs:
         run: |
           cp .env.example .env
           uvicorn app.main:app --host 0.0.0.0 --port 3050 &
-      
+
       - name: Wait for API app
         run: |
           for i in {1..30}; do
@@ -52,8 +53,11 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+
       - name: Run api tests
-        run: python3 -m pytest tests --html=reports/api-test-report.html --self-contained-html
+        run: |
+          mkdir -p reports
+          python3 -m pytest tests --html=reports/api-test-report.html --self-contained-html
 
       - name: Upload HTML test report
         uses: actions/upload-artifact@v4
