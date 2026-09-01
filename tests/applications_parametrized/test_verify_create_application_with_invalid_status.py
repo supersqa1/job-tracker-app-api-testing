@@ -7,16 +7,16 @@ from helpers.error_helper import verify_error_respsone
 
 
 INVALID_STATUS_VALUES = [
-    pytest.param("interviewing", id="unsupported_string"),
-    pytest.param("", id="empty_string"),
-    pytest.param("   ", id="whitespace_string"),
-    pytest.param("APPLIED", id="uppercase_status"),
-    pytest.param(123, id="numeric_value"),
-    pytest.param(True, id="boolean_value"),
-    pytest.param(None, id="null_value"),
-    pytest.param([], id="array_value"),
-    pytest.param({}, id="object_value")
-    ]
+    pytest.param("interviewing", id="unsupported_string", marks=pytest.mark.tcid("071")),
+    pytest.param("", id="empty_string", marks=pytest.mark.tcid("072")),
+    pytest.param("   ", id="whitespace_string", marks=pytest.mark.tcid("073")),
+    pytest.param("APPLIED", id="uppercase_status", marks=pytest.mark.tcid("074")),
+    pytest.param(123, id="numeric_value", marks=pytest.mark.tcid("075")),
+    pytest.param(True, id="boolean_value", marks=pytest.mark.tcid("076")),
+    pytest.param(None, id="null_value", marks=pytest.mark.tcid("077")),
+    pytest.param([], id="array_value", marks=pytest.mark.tcid("078")),
+    pytest.param({}, id="object_value", marks=pytest.mark.tcid("079")),
+]
 
 
 @pytest.mark.parametrize("invalid_status", INVALID_STATUS_VALUES)

@@ -1,3 +1,8 @@
+import pytest
+from clients.api_client import APIClient
+from helpers.application_helper import create_application, delete_application
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--tcid",
@@ -26,3 +31,20 @@ def pytest_collection_modifyitems(config, items):
 
     items[:] = selected_items
     config.hook.pytest_deselected(items=deselected_items)
+
+
+@pytest.fixture
+def api_client():
+    return APIClient()
+
+
+@pytest.fixture
+def unauthenticated_api_client():
+    return APIClient(authenticated=False)
+
+
+@pytest.fixture
+def application_fixture(api_client):
+    application = create_application(api_client)
+    yield application
+    delete_application(api_client, application["id"])

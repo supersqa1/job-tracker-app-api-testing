@@ -157,7 +157,101 @@ def split_tcids(values: Iterable[str]) -> list[str]:
     return tcids
 
 
+def tcid_from_marker_call(marker_call: ast.Call) -> str | None:
+    func = marker_call.func
+    is_tcid_marker = (
+        isinstance(func, ast.Attribute)
+        and func.attr == "tcid"
+        and isinstance(func.value, ast.Attribute)
+        and func.value.attr == "mark"
+        and isinstance(func.value.value, ast.Name)
+        and func.value.value.id == "pytest"
+    )
+    if not is_tcid_marker or not marker_call.args:
+        return None
+
+    tcid_arg = marker_call.args[0]
+    if isinstance(tcid_arg, ast.Constant) and isinstance(tcid_arg.value, str):
+        return tcid_arg.value
+
+    return None
+
+
+def iter_tcid_marks_from_parametrize(decorator: ast.Call) -> Iterable[str]:
+    func = decorator.func
+    is_parametrize = (
+        isinstance(func, ast.Attribute)
+        and func.attr == "parametrize"
+        and isinstance(func.value, ast.Attribute)
+        and func.value.attr == "mark"
+        and isinstance(func.value.value, ast.Name)
+        and func.value.value.id == "pytest"
+    )
+    if not is_parametrize or len(decorator.args) < 2:
+        return
+
+    values_arg = decorator.args[1]
+    if not isinstance(values_arg, (ast.List, ast.Tuple)):
+        return
+
+    for value_node in values_arg.elts:
+        yield from iter_tcid_marks_from_pytest_param(value_node)
+
+
+def iter_tcid_marks_from_pytest_param(value_node: ast.AST) -> Iterable[str]:
+    if not isinstance(value_node, ast.Call):
+        return
+    value_func = value_node.func
+    is_pytest_param = (
+        isinstance(value_func, ast.Attribute)
+        and value_func.attr == "param"
+        and isinstance(value_func.value, ast.Name)
+        and value_func.value.id == "pytest"
+    )
+    if not is_pytest_param:
+        return
+
+    for keyword in value_node.keywords:
+        if keyword.arg != "marks":
+            continue
+        marks_node = keyword.value
+        marker_nodes = (
+            marks_node.elts
+            if isinstance(marks_node, (ast.List, ast.Tuple))
+            else [marks_node]
+        )
+        for marker_node in marker_nodes:
+            if isinstance(marker_node, ast.Call):
+                tcid = tcid_from_marker_call(marker_node)
+                if tcid:
+                    yield tcid
+
+
+def collect_param_tcid_assignments(tree: ast.AST) -> dict[str, list[str]]:
+    assignments: dict[str, list[str]] = {}
+    for node in tree.body if isinstance(tree, ast.Module) else []:
+        if not isinstance(node, ast.Assign):
+            continue
+
+        target_names = [target.id for target in node.targets if isinstance(target, ast.Name)]
+        if not target_names or not isinstance(node.value, (ast.List, ast.Tuple)):
+            continue
+
+        tcids: list[str] = []
+        for value_node in node.value.elts:
+            tcids.extend(iter_tcid_marks_from_pytest_param(value_node))
+        if not tcids:
+            continue
+
+        for target_name in target_names:
+            assignments[target_name] = tcids
+
+    return assignments
+
+
 def iter_tcid_marks(tree: ast.AST) -> Iterable[tuple[str, str]]:
+    param_tcid_assignments = collect_param_tcid_assignments(tree)
+
     for node in ast.walk(tree):
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             continue
@@ -165,20 +259,30 @@ def iter_tcid_marks(tree: ast.AST) -> Iterable[tuple[str, str]]:
         for decorator in node.decorator_list:
             if not isinstance(decorator, ast.Call):
                 continue
+
+            tcid = tcid_from_marker_call(decorator)
+            if tcid:
+                yield tcid, node.name
+
+            for param_tcid in iter_tcid_marks_from_parametrize(decorator):
+                yield param_tcid, node.name
+
             func = decorator.func
-            is_tcid_marker = (
+            is_parametrize = (
                 isinstance(func, ast.Attribute)
-                and func.attr == "tcid"
+                and func.attr == "parametrize"
                 and isinstance(func.value, ast.Attribute)
                 and func.value.attr == "mark"
                 and isinstance(func.value.value, ast.Name)
                 and func.value.value.id == "pytest"
             )
-            if not is_tcid_marker or not decorator.args:
-                continue
-            tcid_arg = decorator.args[0]
-            if isinstance(tcid_arg, ast.Constant) and isinstance(tcid_arg.value, str):
-                yield tcid_arg.value, node.name
+            if (
+                is_parametrize
+                and len(decorator.args) >= 2
+                and isinstance(decorator.args[1], ast.Name)
+            ):
+                for param_tcid in param_tcid_assignments.get(decorator.args[1].id, []):
+                    yield param_tcid, node.name
 
 
 def discover_tcids() -> dict[str, list[tuple[Path, str]]]:
