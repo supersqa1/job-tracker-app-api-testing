@@ -8,6 +8,7 @@ import pytest
 
 from clients.api_client import APIClient
 from clients.sql_client import SQLClient
+from configs.settings import DATABASE_PATH
 
 @pytest.mark.tcid("017")
 def test_verify_create_application_writes_to_audit_logs():
@@ -39,7 +40,7 @@ def test_verify_create_application_writes_to_audit_logs():
     # verify the log table using SQL
     # create connection
     # TODO: use proper path
-    DATABASE_PATH = "/Users/admas/Desktop/QA-Automation/job-tracker-app-for-testing/backend/data/job_tracker.db"
+#     DATABASE_PATH = "/Users/admas/Desktop/QA-Automation/job-tracker-app-for-testing/backend/data/job_tracker.db"
     connection = sqlite3.connect(DATABASE_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()

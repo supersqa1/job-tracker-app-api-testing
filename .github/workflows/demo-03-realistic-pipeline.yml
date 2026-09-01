@@ -1,0 +1,140 @@
+name: Demo 03 - Realistic Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Code Quality - Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Run lint simulation
+        run: echo "Checking code style and formatting..."
+
+  unit-tests:
+    name: Code Quality - Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Run unit tests simulation
+        run: echo "Running fast unit tests..."
+
+  security-scan:
+    name: Code Quality - Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Run security scan simulation
+        run: echo "Scanning dependencies and source code for security issues..."
+
+  build-api:
+    name: Build - API Service
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - unit-tests
+      - security-scan
+
+    steps:
+      - name: Build API simulation
+        run: echo "Building the API service artifact..."
+
+  build-frontend:
+    name: Build - Frontend
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - unit-tests
+      - security-scan
+
+    steps:
+      - name: Build frontend simulation
+        run: echo "Building the frontend artifact..."
+
+  deploy-dev-api:
+    name: Deploy Dev - API
+    runs-on: ubuntu-latest
+    needs: build-api
+
+    steps:
+      - name: Deploy API to dev simulation
+        run: echo "Deploying the API service to development..."
+
+  deploy-dev-frontend:
+    name: Deploy Dev - Frontend
+    runs-on: ubuntu-latest
+    needs: build-frontend
+
+    steps:
+      - name: Deploy frontend to dev simulation
+        run: echo "Deploying the frontend to development..."
+
+  api-tests-dev:
+    name: Test Dev - API Tests
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-dev-api
+      - deploy-dev-frontend
+
+    steps:
+      - name: Run API test suite simulation
+        run: echo "Running API automation tests against the dev environment..."
+
+  ui-smoke-tests-dev:
+    name: Test Dev - UI Smoke Tests
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-dev-api
+      - deploy-dev-frontend
+
+    steps:
+      - name: Run UI smoke tests simulation
+        run: echo "Running UI smoke tests against the dev environment..."
+
+  deploy-staging:
+    name: Deploy Staging
+    runs-on: ubuntu-latest
+    needs:
+      - api-tests-dev
+      - ui-smoke-tests-dev
+
+    steps:
+      - name: Deploy to staging simulation
+        run: echo "Deploying the release candidate to staging..."
+
+  staging-regression-tests:
+    name: Test Staging - Regression
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+
+    steps:
+      - name: Run regression tests simulation
+        run: echo "Running regression tests against staging..."
+
+  deploy-prod:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: staging-regression-tests
+
+    steps:
+      - name: Deploy to production simulation
+        run: echo "Deploying the verified release to production..."
+
+  production-smoke-tests:
+    name: Verify Production - Smoke Tests
+    runs-on: ubuntu-latest
+    needs: deploy-prod
+
+    steps:
+      - name: Run production smoke tests simulation
+        run: echo "Running a small smoke test suite against production..."
