@@ -1,6 +1,7 @@
-name: API Tests
+name: API Tests - Main
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
@@ -13,7 +14,7 @@ permissions:
 jobs:
   api-tests:
     name: Run API Test Suite
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     env:
       DATABASE_PATH: ${{ github.workspace }}/app-under-test/backend/data/job_tracker.db
@@ -22,7 +23,7 @@ jobs:
       - name: Checkout test framework
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.sha }}
 
       - name: Checkout application code
         uses: actions/checkout@v4
