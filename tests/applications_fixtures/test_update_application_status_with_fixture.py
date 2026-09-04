@@ -15,14 +15,14 @@ import pytest
         pytest.param("hired", marks=pytest.mark.tcid("085")),
     ],
 )
-def test_verify_user_can_update_application_status_with_fixture(api_client, application_fixture, new_status):
+def test_verify_user_can_update_application_status_with_fixture(api_client, created_application, new_status):
     """Verify an application fixture can be updated to the requested status."""
-    application_id = application_fixture["id"]
+    application_id = created_application["id"]
     payload = {"status": new_status}
 
     response_body = api_client.patch_json(
         f"/api/v1/applications/{application_id}",
-        payload
+        data=payload,
     )
 
     assert response_body["id"] == application_id
